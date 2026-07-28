@@ -1,0 +1,224 @@
+/* =====================================================================
+ * P1 coaching popup — compact dark frosted glass.
+ *
+ * All tunables live in the :root-style block below. Change a value once
+ * here and the whole popup follows. No need to hunt through the rules.
+ * ===================================================================== */
+.h5p-dialog-wrapper {
+	/* --- Base scale ---
+	 * Fixed font base for the whole popup. H5P scales its dialog font in em
+	 * (~22px inline -> ~32px fullscreen), which made the title/box look
+	 * different between states. Pinning a fixed base makes the popup render
+	 * identically inline and in fullscreen. Bump this to scale everything. */
+	--p1-popup-font: 16px;
+
+	/* --- Size --- */
+	--p1-popup-width: 20rem;        /* fixed width => same in every state */
+	--p1-popup-width-min: 15rem;    /* floor so text stays readable */
+	--p1-popup-width-max: 22rem;    /* ceiling on big screens */
+	--p1-popup-max-height: 70%;     /* cap height; content scrolls past it */
+
+	/* --- Position (top-middle) --- */
+	--p1-popup-top: 6%;             /* distance from top of the player */
+
+	/* --- Look --- */
+	--p1-popup-bg: rgba(18, 20, 26, 0.55);
+	--p1-popup-blur: 16px;
+	--p1-popup-radius: 14px;
+	--p1-popup-border: 1px solid rgba(255, 255, 255, 0.16);
+	--p1-popup-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+	--p1-popup-text: #f1f2f6;
+	--p1-popup-link: #8ec5ff;
+	--p1-popup-pad: 0.9rem 1.05rem; /* inner content padding */
+	--p1-popup-head-gap: 1.6rem;    /* space reserved above the title so it clears the x */
+	--p1-divider: 1px solid rgba(255, 255, 255, 0.16); /* line under the title; set to 0/none to remove */
+	--p1-divider-gap: 0.5rem;       /* space between title and divider/body */
+
+	/* --- Close "x" (fixed rem so it never balloons in fullscreen) --- */
+	--p1-close-size: 1.7rem;        /* button box */
+	--p1-close-font: 1.15rem;       /* glyph size */
+	--p1-close-offset: 0.5rem;      /* inset from top-right corner */
+
+	/* --- Typography --- */
+	--p1-popup-title-size: 1.05rem;
+	--p1-popup-body-size: 0.92rem;
+	--p1-popup-body-line: 1.4;
+
+	/* --- Continue button --- */
+	--p1-btn-font: 0.82rem;
+	--p1-btn-pad: 0.4em 1.1em;
+	--p1-btn-radius: 999px;
+	--p1-btn-bg: #1f88e5;
+	--p1-btn-text: #fff;
+}
+
+/* The popup shell. !important overrides H5P IV, which otherwise sizes the
+ * dialog to the interaction and anchors it off-centre. */
+.h5p-dialog-wrapper .h5p-dialog {
+	/* Fixed font base kills H5P's em scaling so the popup looks the same
+	 * inline and in fullscreen. Everything inside is rem-based off the root,
+	 * so it stays consistent regardless of H5P's container font. */
+	font-size: var(--p1-popup-font) !important;
+	width: clamp(var(--p1-popup-width-min), var(--p1-popup-width), var(--p1-popup-width-max)) !important;
+	min-width: var(--p1-popup-width-min) !important;
+	max-width: calc(100% - 1.5rem) !important;
+	max-height: var(--p1-popup-max-height) !important;
+	top: var(--p1-popup-top) !important;
+	left: 50% !important;
+	transform: translateX(-50%) !important;
+	background: var(--p1-popup-bg);
+	-webkit-backdrop-filter: blur(var(--p1-popup-blur)) saturate(135%);
+	backdrop-filter: blur(var(--p1-popup-blur)) saturate(135%);
+	border: var(--p1-popup-border);
+	box-shadow: var(--p1-popup-shadow);
+	border-radius: var(--p1-popup-radius);
+	color: var(--p1-popup-text);
+	overflow: hidden;
+}
+
+/* Force H5P's inner content boxes to fill the narrowed dialog so the
+ * coaching text reflows instead of overflowing and being clipped, and
+ * collapse H5P's tall reserved header strip into a small gap for the x. */
+.h5p-dialog-wrapper .h5p-dialog-inner,
+.h5p-dialog-wrapper .h5p-dialog-interaction {
+	width: 100% !important;
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+}
+/* H5P ships an empty .h5p-dialog-titlebar whose border-bottom draws a stray
+ * white line ABOVE the real title (the title <h3> lives lower, in the
+ * interaction block). Collapse the titlebar and drop its border so the real
+ * title becomes the top element; the close x is absolutely positioned to the
+ * dialog so it stays put. */
+.h5p-dialog-wrapper .h5p-dialog-titlebar {
+	position: static !important;
+	height: 0 !important;
+	min-height: 0 !important;
+	padding: 0 !important;
+	margin: 0 !important;
+	border: 0 !important;
+	overflow: visible !important;
+}
+.h5p-dialog-wrapper .h5p-dialog-title {
+	display: none !important;
+}
+.h5p-dialog-wrapper .h5p-dialog-inner {
+	margin-top: var(--p1-popup-head-gap) !important;
+}
+.h5p-dialog-wrapper .h5p-dialog-interaction {
+	margin: 0 !important;
+	padding: var(--p1-popup-pad);
+	font-size: var(--p1-popup-font) !important;
+	background: transparent;
+	max-height: inherit;
+	overflow-y: auto;
+}
+
+/* Let long words/labels wrap rather than push past the edge */
+.h5p-dialog-wrapper .h5p-dialog h2,
+.h5p-dialog-wrapper .h5p-dialog h3,
+.h5p-dialog-wrapper .h5p-dialog p {
+	overflow-wrap: anywhere;
+}
+
+/* Light-on-dark typography inside the frosted panel */
+.h5p-dialog-wrapper .h5p-dialog,
+.h5p-dialog-wrapper .h5p-dialog-interaction,
+.h5p-dialog-wrapper .h5p-dialog h1,
+.h5p-dialog-wrapper .h5p-dialog h2,
+.h5p-dialog-wrapper .h5p-dialog h3,
+.h5p-dialog-wrapper .h5p-dialog p,
+.h5p-dialog-wrapper .h5p-dialog li,
+.h5p-dialog-wrapper .h5p-dialog .h5p-text {
+	color: var(--p1-popup-text);
+}
+.h5p-dialog-wrapper .h5p-dialog a {
+	color: var(--p1-popup-link);
+}
+
+/* Tighter heading/paragraph spacing for the smaller box */
+/* Title sits at the top with a divider line beneath it (title above the
+ * line, body below). Tune/remove via --p1-divider. */
+.h5p-dialog-wrapper .h5p-dialog h2,
+.h5p-dialog-wrapper .h5p-dialog h3 {
+	font-size: var(--p1-popup-title-size) !important;
+	font-weight: 700 !important;
+	margin: 0 0 var(--p1-divider-gap) !important;
+	padding: 0 0 var(--p1-divider-gap) !important;
+	border-bottom: var(--p1-divider) !important;
+}
+.h5p-dialog-wrapper .h5p-dialog p {
+	font-size: var(--p1-popup-body-size) !important;
+	line-height: var(--p1-popup-body-line) !important;
+	margin: 0 0 0.6rem !important;
+}
+
+/* Close "x": recolour for dark bg AND pin to a fixed rem size. H5P sizes
+ * it in em, so it inherits the container's enlarged font in fullscreen and
+ * balloons; rem keeps it proportional inline and in fullscreen alike. */
+.h5p-dialog-wrapper .h5p-dialog-close {
+	color: rgba(255, 255, 255, 0.85) !important;
+	width: var(--p1-close-size) !important;
+	height: var(--p1-close-size) !important;
+	font-size: var(--p1-close-font) !important;
+	line-height: var(--p1-close-size) !important;
+	top: var(--p1-close-offset) !important;
+	right: var(--p1-close-offset) !important;
+	padding: 0 !important;
+	text-align: center !important;
+	box-sizing: border-box !important;
+	background-size: var(--p1-close-font) var(--p1-close-font) !important;
+}
+
+/* Continue button — sized proportional to the small panel, not H5P's
+ * default joubel button. width:auto + reset font/padding beats the
+ * inherited .h5p-joubelui-button sizing. */
+.h5p-dialog-wrapper .p1-h5p-continue-button.h5p-joubelui-button,
+.p1-h5p-continue-button {
+	display: block;
+	width: auto !important;
+	min-width: 0 !important;
+	max-width: 100% !important;
+	margin: 0.6rem auto 0 !important;
+	padding: var(--p1-btn-pad) !important;
+	font-size: var(--p1-btn-font) !important;
+	line-height: 1.2 !important;
+	font-weight: 600;
+	border: 0 !important;
+	border-radius: var(--p1-btn-radius) !important;
+	background: var(--p1-btn-bg) !important;
+	color: var(--p1-btn-text) !important;
+	box-shadow: none !important;
+	cursor: pointer;
+}
+
+/* On phones, never let the width rule shrink the box below readable */
+@media (max-width: 600px) {
+	.h5p-dialog-wrapper {
+		--p1-popup-width: 15rem;
+		--p1-popup-width-min: 13rem;
+		--p1-popup-width-max: 17rem;
+		--p1-popup-top: 4%;
+	}
+	.h5p-dialog-wrapper .h5p-dialog {
+		max-width: calc(100% - 1rem) !important;
+	}
+}
+
+/*
+ * Immersive, native-style fullscreen.
+ * H5P letterboxes the video inside the content area; by default the surround
+ * is white, which looks broken on a phone. Fill it with black so (semi-)
+ * fullscreen reads like a native video player. Scoped to the fullscreen state
+ * only, so the inline player is untouched.
+ */
+.h5p-container.h5p-semi-fullscreen,
+.h5p-container.h5p-fullscreen,
+.h5p-semi-fullscreen .h5p-content,
+.h5p-fullscreen .h5p-content,
+.h5p-semi-fullscreen .h5p-interactive-video,
+.h5p-fullscreen .h5p-interactive-video,
+.h5p-semi-fullscreen .h5p-video-wrapper,
+.h5p-fullscreen .h5p-video-wrapper {
+	background-color: #000;
+}

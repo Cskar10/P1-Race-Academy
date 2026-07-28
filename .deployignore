@@ -1,0 +1,20 @@
+# Repository-only files
+.deployignore
+.gitignore
+README.md
+.github
+.github/**
+
+# Database/content snapshots and local regression tests
+db-exports
+db-exports/**
+tests
+tests/**
+
+# Gutenberg block source/build tooling; the compiled build stays deployable
+wp-content/plugins/go-kart-blocks/.editorconfig
+wp-content/plugins/go-kart-blocks/.gitignore
+wp-content/plugins/go-kart-blocks/package.json
+wp-content/plugins/go-kart-blocks/package-lock.json
+wp-content/plugins/go-kart-blocks/src
+wp-content/plugins/go-kart-blocks/src/**

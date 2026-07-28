@@ -1,0 +1,27 @@
+{
+	"name": "go-kart-blocks",
+	"version": "0.4.1",
+	"description": "Custom learning blocks for P1 Race Academy.",
+	"author": "P1 Race Academy",
+	"license": "GPL-2.0-or-later",
+	"main": "build/index.js",
+	"scripts": {
+		"build": "wp-scripts build --blocks-manifest",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"start": "wp-scripts start --blocks-manifest"
+	},
+	"dependencies": {
+		"@wordpress/block-editor": "15.21.0",
+		"@wordpress/blocks": "15.21.0",
+		"@wordpress/components": "35.0.0",
+		"@wordpress/data": "10.48.0",
+		"@wordpress/i18n": "6.21.0"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "32.4.0"
+	}
+}

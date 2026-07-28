@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="">
+  <defs>
+    <radialGradient id="glowA" cx="28%" cy="30%" r="62%">
+      <stop offset="0" stop-color="#1e96c9" stop-opacity=".72"/>
+      <stop offset=".45" stop-color="#0c5e80" stop-opacity=".30"/>
+      <stop offset="1" stop-color="#101010" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowB" cx="74%" cy="58%" r="70%">
+      <stop offset="0" stop-color="#3fb1e5" stop-opacity=".56"/>
+      <stop offset=".55" stop-color="#123f58" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#101010" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="line" x1="0" x2="1">
+      <stop offset="0" stop-color="#0c5e80" stop-opacity="0"/>
+      <stop offset=".18" stop-color="#1e96c9" stop-opacity=".42"/>
+      <stop offset=".70" stop-color="#3fb1e5" stop-opacity=".88"/>
+      <stop offset="1" stop-color="#3fb1e5" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="blur" x="-20%" y="-50%" width="140%" height="200%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+  <rect width="1600" height="900" fill="#101010"/>
+  <rect width="1600" height="900" fill="url(#glowA)"/>
+  <rect width="1600" height="900" fill="url(#glowB)"/>
+  <g opacity=".52" filter="url(#blur)">
+    <path d="M-90 530 C 210 430 410 600 710 500 S 1210 345 1710 425" fill="none" stroke="url(#line)" stroke-width="8"/>
+    <path d="M-90 600 C 250 515 440 665 760 565 S 1230 430 1710 520" fill="none" stroke="url(#line)" stroke-width="6"/>
+    <path d="M-90 455 C 230 350 450 520 735 415 S 1190 280 1710 350" fill="none" stroke="url(#line)" stroke-width="5"/>
+  </g>
+  <g opacity=".46">
+    <path d="M-90 530 C 210 430 410 600 710 500 S 1210 345 1710 425" fill="none" stroke="url(#line)" stroke-width="2"/>
+    <path d="M-90 600 C 250 515 440 665 760 565 S 1230 430 1710 520" fill="none" stroke="url(#line)" stroke-width="2"/>
+    <path d="M-90 455 C 230 350 450 520 735 415 S 1190 280 1710 350" fill="none" stroke="url(#line)" stroke-width="2"/>
+  </g>
+  <g fill="#8bdcff" opacity=".82">
+    <circle cx="325" cy="496" r="5"/>
+    <circle cx="650" cy="516" r="4"/>
+    <circle cx="1020" cy="420" r="5"/>
+    <circle cx="1246" cy="374" r="3"/>
+    <circle cx="490" cy="585" r="4"/>
+    <circle cx="905" cy="520" r="3"/>
+  </g>
+</svg>

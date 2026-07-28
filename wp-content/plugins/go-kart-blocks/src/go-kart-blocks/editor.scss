@@ -1,0 +1,18 @@
+/**
+ * The following styles get applied inside the editor only.
+ *
+ * Replace them with your own styles or remove the file completely.
+ */
+
+.wp-block-p1-race-academy-reflection-prompt {
+
+	.p1-reflection-prompt__question {
+		cursor: text;
+	}
+
+	.p1-reflection-prompt__editor-note {
+		color: #59636e;
+		font-size: 0.8125rem;
+		margin: 0.5rem 0 0;
+	}
+}

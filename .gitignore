@@ -1,0 +1,42 @@
+# --- P1 Race Academy / go-kart-dev custom code repo ---
+# This repo tracks ONLY custom code. WordPress core, the database, uploads,
+# and host config are intentionally excluded — those are handled by the
+# managed migration to Rocket.net (hosting.com), not by git.
+
+# Stale full-site snapshot (removed 2026-06-09; still in pre-2026-06-09 history)
+/go-kart-dev/
+
+# WordPress runtime / secrets — never track
+wp-config.php
+wp-config-sample.php
+.htaccess
+
+# Database dumps & backups (contain secrets + user data — restore via managed migration)
+*.sql
+*.sql.gz
+*.sql.zip
+
+# Media / uploads (ride the managed migration, not git)
+wp-content/uploads/
+
+# Dependencies & build tooling
+node_modules/
+vendor/
+.npm
+.eslintcache
+
+# Logs & caches
+*.log
+logs/
+
+# Packaged builds
+*.tgz
+*.zip
+
+# Env / OS / editor cruft
+.env
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

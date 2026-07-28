@@ -1,0 +1,61 @@
+{
+  "content_id": 3,
+  "title": "Lesson 1.1 coaching overlays",
+  "library": "H5P.InteractiveVideo 1.28",
+  "a11y_title": "Lesson 1.1 interactive coaching video",
+  "video": {
+    "files": [
+      {
+        "path": "videos/lesson-1-1-coaching-480p.webm",
+        "mime": "video/webm"
+      },
+      {
+        "path": "videos/lesson-1-1-coaching-480p.mp4",
+        "mime": "video/mp4"
+      }
+    ],
+    "fallback_strategy": "WebM first for Firefox/Linux codec fallback; MP4 retained for Safari and H.264-native browsers.",
+    "start_screen": {
+      "title": "1.1 - What Good Footage Shows",
+      "description": "The video pauses at key coaching moments. Read each explanation, then continue playback."
+    }
+  },
+  "interactions": [
+    {
+      "timestamp": 8,
+      "visible_until": 18,
+      "title": "Mid-corner oversteer",
+      "description": "Mid-corner oversteer forces the driver to correct the steering away from the corner. This opens the kart's line and causes the driver to miss the apex.",
+      "pause": true,
+      "display_type": "button",
+      "position": {
+        "x": 6,
+        "y": 12
+      },
+      "bookmark": true
+    },
+    {
+      "timestamp": 14,
+      "visible_until": 24,
+      "title": "Rear steps out again",
+      "description": "The driver loses the rear again. Listen for the slight lift as the throttle cuts out. This time, the driver recovers and still hits the apex successfully.",
+      "pause": true,
+      "display_type": "button",
+      "position": {
+        "x": 6,
+        "y": 25
+      },
+      "bookmark": true
+    }
+  ],
+  "behavior": {
+    "automatic_popup": true,
+    "continue_button": true,
+    "rewind_marker_to_own_timestamp": true,
+    "overlap_safe_auto_open": true,
+    "native_os_fullscreen": false,
+    "h5p_immersive_fullscreen": true
+  },
+  "source_of_truth": "LocalWP go-kart-dev H5P content #3",
+  "updated": "2026-06-17"
+}

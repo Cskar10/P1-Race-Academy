@@ -1,0 +1,89 @@
+/* P1 Motion Layer (Tier 1) - front page + Online Coaching page.
+   Smooth scroll, scroll reveals, scroll kart, magnetic CTAs.
+   Everything degrades to a plain static page if JS is off or
+   the visitor prefers reduced motion. */
+
+/* --- Lenis smooth scroll base (per Lenis docs) --- */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+.lenis.lenis-smooth iframe { pointer-events: none; }
+
+/* --- Scroll reveals (class applied by JS, so no-JS shows everything) --- */
+.p1-section-flow {
+  opacity: .985;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity 1s cubic-bezier(.2,.7,.2,1),
+              transform 1s cubic-bezier(.2,.7,.2,1);
+}
+.p1-section-flow.p1-section-in {
+  opacity: 1;
+  transform: none;
+}
+.p1-reveal {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition: opacity 1s cubic-bezier(.2,.7,.2,1),
+              transform 1s cubic-bezier(.2,.7,.2,1);
+  will-change: opacity, transform;
+}
+.p1-reveal.p1-in { opacity: 1; transform: none; }
+
+/* --- Hero: charcoal with soft blue glow (tier 1), no lines/dots --- */
+.p1-hero {
+  position: relative;
+  overflow: hidden;
+  background-color: #101010;
+  background-image:
+    radial-gradient(58% 64% at 25% 28%, rgba(30, 150, 201, .42), rgba(12, 94, 128, .15) 46%, rgba(16, 16, 16, 0) 72%),
+    radial-gradient(72% 78% at 78% 64%, rgba(63, 177, 229, .40), rgba(18, 63, 88, .14) 55%, rgba(16, 16, 16, 0) 80%);
+}
+
+/* --- Scroll progress kart --- */
+.p1-scroll-kart {
+  position: fixed;
+  left: 0;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 40;
+  width: clamp(118px, 11vw, 176px);
+  aspect-ratio: 784 / 476;
+  background: url("p1-scroll-kart.png?v=20260706-8006") center / contain no-repeat;
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .30));
+  transition: opacity .45s ease;
+  will-change: transform;
+}
+.p1-scroll-kart::after {
+  content: "";
+  position: absolute;
+  left: 16%;
+  right: 13%;
+  bottom: 7%;
+  height: 9%;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .24);
+  filter: blur(4px);
+}
+.p1-kart-ready { opacity: .96; }
+.p1-kart-static { opacity: .62; }
+
+@media (max-width: 767px) {
+  .p1-scroll-kart {
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: 88px;
+  }
+}
+
+/* --- Magnetic CTA buttons (desktop pointer only; JS-gated) --- */
+.p1-magnetic { transition: transform .28s cubic-bezier(.2,.7,.2,1); will-change: transform; }
+
+/* --- Accessibility / safety: kill all motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .p1-section-flow,
+  .p1-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .p1-scroll-kart { transition: none !important; }
+  .p1-magnetic { transition: none !important; transform: none !important; }
+}
