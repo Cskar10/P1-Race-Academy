@@ -2,7 +2,7 @@
 /**
  * Plugin Name: P1 Simple Site
  * Description: Keeps the public P1 site and navigation online while courses and payments are unavailable.
- * Version: 0.1.0
+ * Version: 0.1.1
  * Author: P1 Race Academy
  */
 
@@ -130,7 +130,11 @@ final class P1_Simple_Site {
 	}
 
 	public static function filter_course_page_title( $title, $post_id ): string {
-		if ( self::is_main_course_page_item( (int) $post_id ) ) {
+		if (
+			! self::is_non_frontend_request()
+			&& self::is_course_page()
+			&& self::queried_object_id() === (int) $post_id
+		) {
 			return self::COMING_SOON;
 		}
 

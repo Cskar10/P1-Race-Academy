@@ -255,15 +255,18 @@ p1_assert(
 p1_assert( '' === P1_Simple_Site::remove_course_shortcodes( false, 'h5p', [], [] ), 'H5P shortcodes are removed.' );
 p1_assert( false === P1_Simple_Site::remove_course_shortcodes( false, 'gallery', [], [] ), 'Unrelated shortcodes are unchanged.' );
 
-p1_assert( 'Coming soon' === P1_Simple_Site::filter_course_page_title( 'Online Coaching', 55 ), 'Course page heading says Coming soon.' );
+$GLOBALS['p1_test_state']['in_the_loop'] = false;
+p1_assert(
+	'Coming soon' === P1_Simple_Site::filter_course_page_title( 'Online Coaching', 55 ),
+	'The out-of-loop theme hero says Coming soon.'
+);
+$GLOBALS['p1_test_state']['in_the_loop'] = true;
 p1_assert(
 	str_contains( P1_Simple_Site::filter_course_page_content( '<p>Buy now</p>' ), 'coming soon' ),
 	'Course sales content is replaced.'
 );
 
-$GLOBALS['p1_test_state']['in_the_loop'] = false;
-p1_assert( 'Course' === P1_Simple_Site::filter_course_page_title( 'Course', 55 ), 'Navigation labels stay unchanged.' );
-$GLOBALS['p1_test_state']['in_the_loop'] = true;
+p1_assert( 'Course' === P1_Simple_Site::filter_course_page_title( 'Course', 501 ), 'Navigation labels stay unchanged.' );
 
 p1_assert( false === P1_Simple_Site::is_unavailable_request(), 'The Coming soon page does not redirect itself.' );
 
