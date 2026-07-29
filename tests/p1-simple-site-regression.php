@@ -262,8 +262,9 @@ p1_assert(
 );
 $GLOBALS['p1_test_state']['in_the_loop'] = true;
 p1_assert(
-	str_contains( P1_Simple_Site::filter_course_page_content( '<p>Buy now</p>' ), 'coming soon' ),
-	'Course sales content is replaced.'
+	'<h1 class="p1-simple-coming-soon">Coming soon</h1>'
+		=== P1_Simple_Site::filter_course_page_content( '<p>Buy now</p>' ),
+	'Course sales content is replaced by a visible Coming soon heading.'
 );
 
 p1_assert( 'Course' === P1_Simple_Site::filter_course_page_title( 'Course', 501 ), 'Navigation labels stay unchanged.' );

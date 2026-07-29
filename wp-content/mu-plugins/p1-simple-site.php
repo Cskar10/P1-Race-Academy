@@ -2,7 +2,7 @@
 /**
  * Plugin Name: P1 Simple Site
  * Description: Keeps the public P1 site and navigation online while courses and payments are unavailable.
- * Version: 0.1.1
+ * Version: 0.1.2
  * Author: P1 Race Academy
  */
 
@@ -154,7 +154,7 @@ final class P1_Simple_Site {
 			return (string) $content;
 		}
 
-		return '<p class="p1-simple-coming-soon">Course content is coming soon.</p>';
+		return '<h1 class="p1-simple-coming-soon">Coming soon</h1>';
 	}
 
 	public static function redirect_unavailable_pages(): void {
