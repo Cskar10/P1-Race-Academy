@@ -72,11 +72,11 @@
     doc.body.appendChild(kart);
 
     var current = -1, target = 12, raf = 0;
-    // Asset faces left; mirror (scaleX -1) to face right. Car always points the way it travels.
+    // Asset faces right; flip only when travelling left. Kart always points the way it travels.
     var faceRight = true;
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
     function draw() {
-      kart.style.transform = 'translate3d(' + current.toFixed(2) + 'px,0,0) scaleX(' + (faceRight ? -1 : 1) + ')';
+      kart.style.transform = 'translate3d(' + current.toFixed(2) + 'px,0,0) scaleX(' + (faceRight ? 1 : -1) + ')';
     }
     function updateTarget() {
       var root = doc.documentElement;
