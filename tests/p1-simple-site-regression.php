@@ -15,6 +15,7 @@ $GLOBALS['p1_test_state']      = [
 	'admin'           => false,
 	'ajax'            => false,
 	'cron'            => false,
+	'logged_in'       => false,
 	'page'            => 'online-coaching',
 	'queried_id'      => 55,
 	'in_the_loop'     => true,
@@ -77,6 +78,10 @@ function wp_doing_cron() {
 	return $GLOBALS['p1_test_state']['cron'];
 }
 
+function is_user_logged_in() {
+	return $GLOBALS['p1_test_state']['logged_in'];
+}
+
 function is_page( $page = '' ) {
 	$current = $GLOBALS['p1_test_state']['page'];
 	return is_array( $page ) ? in_array( $current, $page, true ) : $current === $page;
@@ -128,6 +133,39 @@ function is_product_category() {
 
 function is_product_tag() {
 	return ! empty( $GLOBALS['p1_test_state']['commerce_checks']['is_product_tag'] );
+}
+
+function get_page_by_path( $slug ) {
+	return (object) [ 'post_name' => $slug ];
+}
+
+function get_permalink( $page ) {
+	return home_url( '/' . $page->post_name . '/' );
+}
+
+function home_url( $path = '' ) {
+	return 'https://example.test' . $path;
+}
+
+function wc_get_page_permalink( $page ) {
+	return 'myaccount' === $page ? home_url( '/my-account/' ) : '';
+}
+
+function add_query_arg( $key, $value, $url ) {
+	return $url . ( str_contains( $url, '?' ) ? '&' : '?' )
+		. rawurlencode( $key ) . '=' . rawurlencode( $value );
+}
+
+function sanitize_key( $value ) {
+	return preg_replace( '/[^a-z0-9_\\-]/', '', strtolower( (string) $value ) );
+}
+
+function wp_unslash( $value ) {
+	return $value;
+}
+
+function esc_attr( $value ) {
+	return htmlspecialchars( (string) $value, ENT_QUOTES, 'UTF-8' );
 }
 
 final class P1_Checkout_Flow {
@@ -200,6 +238,8 @@ function p1_assert( $condition, string $message ): void {
 p1_assert( isset( $GLOBALS['p1_test_filters']['woocommerce_is_purchasable'] ), 'Purchase filter was registered.' );
 p1_assert( isset( $GLOBALS['p1_test_filters']['sensei_can_user_view_lesson'] ), 'Lesson access filter was registered.' );
 p1_assert( isset( $GLOBALS['p1_test_actions']['template_redirect'][0] ), 'Early redirect was registered.' );
+p1_assert( isset( $GLOBALS['p1_test_actions']['woocommerce_login_form_end'][10] ), 'Support return field was registered for login.' );
+p1_assert( isset( $GLOBALS['p1_test_actions']['woocommerce_register_form_end'][10] ), 'Support return field was registered for registration.' );
 
 P1_Simple_Site::disable_legacy_integrations();
 p1_assert(
@@ -216,9 +256,13 @@ p1_assert(
 );
 p1_assert(
 	! p1_test_remove_hook( 'actions', 'admin_post_nopriv_p1_video_submission', [ 'P1_Video_Submission_Flow', 'handle_submission' ], 10 ),
-	'Public video submissions are disabled.'
+	'Guest video submissions are disabled.'
 );
-p1_assert( ! isset( $GLOBALS['p1_test_shortcodes']['p1_video_submission_form'] ), 'Video submission shortcode is disabled.' );
+p1_assert(
+	p1_test_remove_hook( 'actions', 'admin_post_p1_video_submission', [ 'P1_Video_Submission_Flow', 'handle_submission' ], 10 ),
+	'Logged-in video submissions remain enabled.'
+);
+p1_assert( isset( $GLOBALS['p1_test_shortcodes']['p1_video_submission_form'] ), 'The Support form remains enabled for account holders.' );
 p1_assert(
 	! p1_test_remove_hook( 'actions', 'rest_api_init', 'p1_reflection_prompt_register_rest_routes', 10 ),
 	'Reflection response API is disabled.'
@@ -253,8 +297,41 @@ p1_assert(
 );
 
 p1_assert( '' === P1_Simple_Site::remove_course_shortcodes( false, 'h5p', [], [] ), 'H5P shortcodes are removed.' );
+p1_assert(
+	false === P1_Simple_Site::remove_course_shortcodes( false, 'p1_video_submission_form', [], [] ),
+	'The Support form shortcode is unchanged.'
+);
 p1_assert( false === P1_Simple_Site::remove_course_shortcodes( false, 'gallery', [], [] ), 'Unrelated shortcodes are unchanged.' );
 
+$GLOBALS['p1_test_state']['page']      = 'contact';
+$GLOBALS['p1_test_state']['logged_in'] = false;
+p1_assert( true === P1_Simple_Site::should_gate_support(), 'Guests must log in before opening Support.' );
+p1_assert(
+	'https://example.test/my-account/?p1_support_access=1' === P1_Simple_Site::support_login_url(),
+	'Guests are sent to the existing account login/registration screen.'
+);
+p1_assert(
+	'<p>Support form</p>' === P1_Simple_Site::filter_course_page_content( '<p>Support form</p>' ),
+	'The Support page keeps its main-branch content.'
+);
+p1_assert( false === P1_Simple_Site::is_unavailable_request(), 'Support does not redirect to Coming soon.' );
+
+$GLOBALS['p1_test_state']['logged_in'] = true;
+p1_assert( false === P1_Simple_Site::should_gate_support(), 'Logged-in account holders can open Support.' );
+
+$_GET['p1_support_access'] = '1';
+ob_start();
+P1_Simple_Site::render_support_redirect_field();
+$support_redirect_field = (string) ob_get_clean();
+unset( $_GET['p1_support_access'] );
+p1_assert(
+	str_contains( $support_redirect_field, 'name="redirect"' )
+		&& str_contains( $support_redirect_field, 'https://example.test/contact/' ),
+	'Login and registration return account holders to Support.'
+);
+
+$GLOBALS['p1_test_state']['page']      = 'online-coaching';
+$GLOBALS['p1_test_state']['logged_in'] = false;
 $GLOBALS['p1_test_state']['in_the_loop'] = false;
 p1_assert(
 	'Coming soon' === P1_Simple_Site::filter_course_page_title( 'Online Coaching', 55 ),

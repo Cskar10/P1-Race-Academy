@@ -18,7 +18,7 @@ to Rocket.net staging over SFTP.
 ### `wp-content/mu-plugins/` — custom must-use plugins
 | Plugin | Version | Purpose |
 |---|---|---|
-| `p1-simple-site.php` | 0.1.0 | `Simple` branch guard: keeps navigation intact, makes checkout/products/course modules unavailable, and turns `/online-coaching/` into a Coming soon page. |
+| `p1-simple-site.php` | 0.2.0 | `Simple` branch guard: keeps navigation intact, makes checkout/products/course modules unavailable, turns `/online-coaching/` into a Coming soon page, and gates Support behind account login/registration. |
 | `p1-sensei-woo-bridge.php` | 0.4.0 | Maps WooCommerce products → Sensei course access. Verifies paid state, revokes on non-paid states including on-hold, reconciles mapping changes, and runs a daily orphan-grant audit. |
 | `p1-checkout-flow.php` | 0.2.0 | Clean buy-now checkout (`/checkout/?p1_buy_online_coaching=1`), forces qty 1, clears stale notices. |
 | `p1-purchase-welcome-flow.php` | 0.2.0 | Post-purchase welcome / FluentCRM funnel trigger. |
@@ -52,10 +52,14 @@ the public payment and learning flows:
 
 - WooCommerce products cannot be purchased, payment gateways are removed, and
   cart, checkout, shop, product, and buy-now requests lead to the course page.
-- Sensei course, lesson, quiz, dashboard, H5P, reflection, and video-submission
-  interfaces are unavailable on the public site.
+- Sensei course, lesson, quiz, dashboard, H5P, and reflection interfaces are
+  unavailable on the public site.
 - `/online-coaching/` keeps its menu label but renders with the heading
   **Coming soon** and no sales or course-module content.
+- `/contact/` keeps the full `main`-branch Support experience for account
+  holders. Guests are sent to the existing My Account login/registration
+  screen and returned to Support after authentication; direct guest video
+  submissions remain disabled.
 
 The original integrations and database records are left intact so returning to
 `main` restores the full site without a content migration. Run the focused

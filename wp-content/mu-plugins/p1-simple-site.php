@@ -2,7 +2,7 @@
 /**
  * Plugin Name: P1 Simple Site
  * Description: Keeps the public P1 site and navigation online while courses and payments are unavailable.
- * Version: 0.1.2
+ * Version: 0.2.0
  * Author: P1 Race Academy
  */
 
@@ -11,12 +11,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 final class P1_Simple_Site {
-	private const COURSE_PAGE_SLUG = 'online-coaching';
-	private const COMING_SOON      = 'Coming soon';
+	private const COURSE_PAGE_SLUG    = 'online-coaching';
+	private const SUPPORT_PAGE_SLUG   = 'contact';
+	private const SUPPORT_RETURN_ARG  = 'p1_support_access';
+	private const COMING_SOON         = 'Coming soon';
 
 	public static function init(): void {
 		add_action( 'plugins_loaded', [ __CLASS__, 'disable_legacy_integrations' ], PHP_INT_MAX );
+		add_action( 'template_redirect', [ __CLASS__, 'redirect_guest_support' ], 0 );
 		add_action( 'template_redirect', [ __CLASS__, 'redirect_unavailable_pages' ], 0 );
+		add_action( 'woocommerce_login_form_end', [ __CLASS__, 'render_support_redirect_field' ] );
+		add_action( 'woocommerce_register_form_end', [ __CLASS__, 'render_support_redirect_field' ] );
 
 		add_filter( 'woocommerce_is_purchasable', [ __CLASS__, 'deny_purchase' ], PHP_INT_MAX );
 		add_filter( 'woocommerce_variation_is_purchasable', [ __CLASS__, 'deny_purchase' ], PHP_INT_MAX );
@@ -60,14 +65,9 @@ final class P1_Simple_Site {
 		}
 
 		if ( class_exists( 'P1_Video_Submission_Flow' ) ) {
-			remove_action( 'admin_post_p1_video_submission', [ 'P1_Video_Submission_Flow', 'handle_submission' ] );
 			remove_action( 'admin_post_nopriv_p1_video_submission', [ 'P1_Video_Submission_Flow', 'handle_submission' ] );
 			remove_action( 'woocommerce_thankyou', [ 'P1_Video_Submission_Flow', 'render_order_received_next_step' ], 20 );
 			remove_filter( 'the_content', [ 'P1_Video_Submission_Flow', 'append_order_received_next_step' ], 20 );
-		}
-
-		if ( function_exists( 'remove_shortcode' ) ) {
-			remove_shortcode( 'p1_video_submission_form' );
 		}
 
 		if ( function_exists( 'p1_reflection_prompt_register_rest_routes' ) ) {
@@ -122,7 +122,7 @@ final class P1_Simple_Site {
 			return $return;
 		}
 
-		if ( in_array( (string) $tag, [ 'h5p', 'p1_video_submission_form' ], true ) ) {
+		if ( 'h5p' === (string) $tag ) {
 			return '';
 		}
 
@@ -155,6 +155,45 @@ final class P1_Simple_Site {
 		}
 
 		return '<h1 class="p1-simple-coming-soon">Coming soon</h1>';
+	}
+
+	/**
+	 * Keep the main-branch Support experience intact for account holders while
+	 * ensuring guests enter through the existing WooCommerce login/register
+	 * screen. A fixed return flag avoids accepting an arbitrary redirect URL.
+	 */
+	public static function redirect_guest_support(): void {
+		if ( ! self::should_gate_support() ) {
+			return;
+		}
+
+		if ( function_exists( 'nocache_headers' ) ) {
+			nocache_headers();
+		}
+
+		wp_safe_redirect( self::support_login_url(), 302, 'P1 Simple Site' );
+		exit;
+	}
+
+	public static function should_gate_support(): bool {
+		return ! self::is_non_frontend_request()
+			&& self::is_support_page()
+			&& function_exists( 'is_user_logged_in' )
+			&& ! is_user_logged_in();
+	}
+
+	/**
+	 * Preserve the Support destination through both WooCommerce account forms.
+	 */
+	public static function render_support_redirect_field(): void {
+		if ( ! self::is_support_access_request() ) {
+			return;
+		}
+
+		printf(
+			'<input type="hidden" name="redirect" value="%s">' . "\n",
+			esc_attr( self::support_page_url() )
+		);
 	}
 
 	public static function redirect_unavailable_pages(): void {
@@ -213,6 +252,15 @@ final class P1_Simple_Site {
 		return function_exists( 'is_page' ) && is_page( self::COURSE_PAGE_SLUG );
 	}
 
+	private static function is_support_page(): bool {
+		return function_exists( 'is_page' ) && is_page( self::SUPPORT_PAGE_SLUG );
+	}
+
+	private static function is_support_access_request(): bool {
+		return isset( $_GET[ self::SUPPORT_RETURN_ARG ] )
+			&& '1' === sanitize_key( wp_unslash( $_GET[ self::SUPPORT_RETURN_ARG ] ) );
+	}
+
 	private static function queried_object_id(): int {
 		return function_exists( 'get_queried_object_id' ) ? (int) get_queried_object_id() : 0;
 	}
@@ -236,6 +284,37 @@ final class P1_Simple_Site {
 		}
 
 		return home_url( '/' . self::COURSE_PAGE_SLUG . '/' );
+	}
+
+	private static function support_page_url(): string {
+		if ( function_exists( 'get_page_by_path' ) && function_exists( 'get_permalink' ) ) {
+			$page = get_page_by_path( self::SUPPORT_PAGE_SLUG );
+			if ( $page ) {
+				$url = get_permalink( $page );
+				if ( $url ) {
+					return (string) $url;
+				}
+			}
+		}
+
+		return home_url( '/' . self::SUPPORT_PAGE_SLUG . '/' );
+	}
+
+	public static function support_login_url(): string {
+		$url = function_exists( 'wc_get_page_permalink' ) ? wc_get_page_permalink( 'myaccount' ) : '';
+
+		if ( ! $url && function_exists( 'get_page_by_path' ) && function_exists( 'get_permalink' ) ) {
+			$page = get_page_by_path( 'my-account' );
+			if ( $page ) {
+				$url = get_permalink( $page );
+			}
+		}
+
+		if ( ! $url ) {
+			$url = home_url( '/my-account/' );
+		}
+
+		return add_query_arg( self::SUPPORT_RETURN_ARG, '1', $url );
 	}
 }
 
