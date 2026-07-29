@@ -18,6 +18,7 @@ to Rocket.net staging over SFTP.
 ### `wp-content/mu-plugins/` — custom must-use plugins
 | Plugin | Version | Purpose |
 |---|---|---|
+| `p1-simple-site.php` | 0.1.0 | `Simple` branch guard: keeps navigation intact, makes checkout/products/course modules unavailable, and turns `/online-coaching/` into a Coming soon page. |
 | `p1-sensei-woo-bridge.php` | 0.4.0 | Maps WooCommerce products → Sensei course access. Verifies paid state, revokes on non-paid states including on-hold, reconciles mapping changes, and runs a daily orphan-grant audit. |
 | `p1-checkout-flow.php` | 0.2.0 | Clean buy-now checkout (`/checkout/?p1_buy_online_coaching=1`), forces qty 1, clears stale notices. |
 | `p1-purchase-welcome-flow.php` | 0.2.0 | Post-purchase welcome / FluentCRM funnel trigger. |
@@ -43,6 +44,22 @@ Course-access operations:
 - `wp p1-course-access reconcile <course-id>` — reconcile existing paid buyers after a mapping change.
 - `wp p1-course-access status` — show the daily audit schedule and last result.
 - `wp eval-file tests/p1-sensei-woo-bridge-regression.php` — run the disposable LocalWP regression suite.
+
+### `Simple` branch
+
+The `Simple` branch deliberately keeps the existing navigation but disables
+the public payment and learning flows:
+
+- WooCommerce products cannot be purchased, payment gateways are removed, and
+  cart, checkout, shop, product, and buy-now requests lead to the course page.
+- Sensei course, lesson, quiz, dashboard, H5P, reflection, and video-submission
+  interfaces are unavailable on the public site.
+- `/online-coaching/` keeps its menu label but renders with the heading
+  **Coming soon** and no sales or course-module content.
+
+The original integrations and database records are left intact so returning to
+`main` restores the full site without a content migration. Run the focused
+standalone check with `php tests/p1-simple-site-regression.php`.
 
 ### `wp-content/plugins/go-kart-blocks/` — custom Gutenberg blocks
 Reflection Prompt block (`P1 Race Academy Blocks`).
