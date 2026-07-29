@@ -22,6 +22,7 @@ to Rocket.net staging over SFTP.
 | `p1-checkout-flow.php` | 0.2.0 | Clean buy-now checkout (`/checkout/?p1_buy_online_coaching=1`), forces qty 1, clears stale notices. |
 | `p1-purchase-welcome-flow.php` | 0.2.0 | Post-purchase welcome / FluentCRM funnel trigger. |
 | `p1-video-submission-flow.php` | 0.6.0 | Private coaching-footage uploads stored outside web root (fails closed). Set `p1_video_submission_private_dir` on the host. |
+| `p1-support-access.php` | 0.1.0 | Gates Support and coaching-footage submission behind the existing WooCommerce account login/registration flow. |
 | `p1-account-nav.php` | 0.4.1 | Main nav: Home · Course · Login/My Account · Dashboard · Shop · Support, with active-page highlight. My Account Downloads is relabelled as Shop and points to the shop page. |
 | `p1-404-page.php` | 0.2.0 | Branded "404 · Off track" page, real HTTP 404, recovery links. |
 | `p1-accessibility-polish.php` | 0.1.0 | AA contrast, focus indicators, touch targets, ARIA fixes. |
